@@ -21,18 +21,18 @@
 //   console.error(error);
 //   process.exitCode = 1;
 // });
-const hre=require("hardhat");
+const hre = require("hardhat");
 
 async function main() {
-  const Seaport = await hre.ethers.getContractFactory("seaport");
-  const seaport = await Seaport.deploy();
-  await seaport.deployed();
-  console.log(`Seaport contract deployed to: ${seaport.address}`);
+  const ParkingLot = await hre.ethers.getContractFactory("ParkingLot");
+  const parkingLot = await ParkingLot.deploy();
+  await parkingLot.deployed();
+
+  console.log(`ParkingLot contract deployed to: ${parkingLot.address}`);
 }
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-
 
