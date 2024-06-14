@@ -1,58 +1,56 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract seaport{
+contract ParkingLot {
     address public owner;
-    uint public totalports=3;
-    uint public totalShips=0;
+    uint public totalSpaces = 3;
+    uint public totalCars = 0;
 
-    constructor(){
-        owner=msg.sender;
+    constructor() {
+        owner = msg.sender;
     }
 
-    modifier onlyOwner(){
-        require(msg.sender==owner,"Only Owner Can Access");
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only Owner Can Access");
         _;
     }
 
-    mapping(uint=>bool) public portavailability;
-    mapping(uint=>address) public shipatport;
+    mapping(uint => bool) public spaceAvailability;
+    mapping(uint => address) public carAtSpace;
 
-    function dockShip(address _shipaddress) public onlyOwner{
-        require(totalShips<3,"no port available");
-        for(uint i=1;i<=3;i++){
-            if(portavailability[i]==false){
-                portavailability[i]=true;
-                shipatport[i]=_shipaddress;
-                totalShips++;
+    function parkCar(address _carAddress) public onlyOwner {
+        require(totalCars < totalSpaces, "No parking space available");
+        for (uint i = 1; i <= totalSpaces; i++) {
+            if (!spaceAvailability[i]) {
+                spaceAvailability[i] = true;
+                carAtSpace[i] = _carAddress;
+                totalCars++;
                 break;
             }
         }
     }
 
-    function undockShip(address _shipaddress)public onlyOwner{
-        require(totalShips>0,"no ship to remove");
-        uint portofship=1;
-        bool shipfound=false;
+    function removeCar(address _carAddress) public onlyOwner {
+        require(totalCars > 0, "No car to remove");
+        bool carFound = false;
+        uint spaceOfCar;
 
-        for(uint i=1;i<=3;i++){
-            if(shipatport[i]==_shipaddress){
-                portofship=i;
-                shipfound=true;
+        for (uint i = 1; i <= totalSpaces; i++) {
+            if (carAtSpace[i] == _carAddress) {
+                spaceOfCar = i;
+                carFound = true;
+                break;
             }
         }
 
-        shipatport[portofship]=address(0);
-        portavailability[portofship]=false;
-        totalShips--;
+        require(carFound, "No car found!");
 
-        if(!shipfound){
-            revert("Ship Not Found!");
-        }
-
+        carAtSpace[spaceOfCar] = address(0);
+        spaceAvailability[spaceOfCar] = false;
+        totalCars--;
     }
 
-    function assertAvailabilty() public view{
-        assert(totalShips>=0 && totalShips<=3);
+    function assertAvailability() public view {
+        assert(totalCars >= 0 && totalCars <= totalSpaces);
     }
 }
